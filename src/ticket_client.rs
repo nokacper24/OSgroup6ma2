@@ -1,4 +1,6 @@
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
+
+use log::error;
 
 use crate::ticket_server::TicketServer;
 
@@ -8,6 +10,9 @@ pub struct TickerClient {
     server: Arc<Mutex<TicketServer>>,
 }
 
+/// Represents a client that wants to book tickets.
+/// Client only sends a request for given amount of tickets,
+/// ifnores whether the request was successful or not.
 impl TickerClient {
     pub fn new(name: &str, amount: u32, server: Arc<Mutex<TicketServer>>) -> Self {
         Self {
@@ -19,12 +24,10 @@ impl TickerClient {
     pub fn book_tickets(&self) -> () {
         match self.server.lock() {
             Ok(mut server) => {
-                if let Err(e) = server.book_tickets(&self.name, self.amount) {
-                    println!("Error: {}", e);
-                }
+                _ = server.book_tickets(&self.name, self.amount);
             }
             Err(e) => {
-                println!("Error: {}", e);
+                error!("Error locking server: {}", e)
             }
         }
     }
