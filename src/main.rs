@@ -1,6 +1,6 @@
-use std::{sync::{Arc, Mutex}, fmt::format};
+use std::sync::{Arc, Mutex};
 
-use log::{info, error};
+use log::{error, info};
 use ticket_client::TickerClient;
 use ticket_server::TicketServer;
 mod ticket_client;
@@ -11,16 +11,17 @@ use log::LevelFilter;
 
 fn main() {
     env_logger::Builder::new()
-    .format(|buf, record| {
-        writeln!(buf,
-            "Thread: {} [{}] - {}",
-            std::thread::current().name().unwrap_or("unnamed"),
-            record.level(),
-            record.args()
-        )
-    })
-    .filter(None, LevelFilter::Info)
-    .init();
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "Thread: {} [{}] - {}",
+                std::thread::current().name().unwrap_or("unnamed"),
+                record.level(),
+                record.args()
+            )
+        })
+        .filter(None, LevelFilter::Info)
+        .init();
 
     info!("Starting the ticket server...");
     let ticket_server = Arc::new(Mutex::new(TicketServer::new("The Matrix", 15)));
@@ -37,18 +38,18 @@ fn main() {
 
     let mut i = 1;
     for client in clients {
-        let t = std::thread::Builder::new().name(format!("T{}",i)).spawn(move || {
-            client.book_tickets();
-        });
+        let t = std::thread::Builder::new()
+            .name(format!("T{}", i))
+            .spawn(move || {
+                client.book_tickets();
+            });
         threads.push(t);
         i += 1;
     }
 
-    for t in threads {
-        if let Ok(t) = t {
-            if let Err(_) = t.join() {
-                error!("Error joining thread");
-            }
+    for t in threads.into_iter().flatten() {
+        if t.join().is_err() {
+            error!("Error joining thread");
         }
     }
 }

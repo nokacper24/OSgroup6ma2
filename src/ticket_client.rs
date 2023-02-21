@@ -21,7 +21,7 @@ impl TickerClient {
             server,
         }
     }
-    pub fn book_tickets(&self) -> () {
+    pub fn book_tickets(&self) {
         match self.server.lock() {
             Ok(mut server) => {
                 _ = server.book_tickets(&self.name, self.amount);
