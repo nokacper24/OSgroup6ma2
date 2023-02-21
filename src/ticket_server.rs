@@ -1,8 +1,8 @@
-pub struct TickerServer {
+pub struct TicketServer {
     moovie_name: String,
     available_seats: u32,
 }
-impl TickerServer {
+impl TicketServer {
     pub fn new(moovie_name: String, available_seats: u32) -> Self {
         Self {
             moovie_name,
