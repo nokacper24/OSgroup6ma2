@@ -1,11 +1,13 @@
+
+#[derive(Debug, Clone)]
 pub struct TicketServer {
     moovie_name: String,
     available_seats: u32,
 }
 impl TicketServer {
-    pub fn new(moovie_name: String, available_seats: u32) -> Self {
+    pub fn new(moovie_name: &str, available_seats: u32) -> Self {
         Self {
-            moovie_name,
+            moovie_name: moovie_name.to_string(),
             available_seats,
         }
     }
