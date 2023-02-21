@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::{sync::{Arc, Mutex}, fmt::format};
 
 use log::{info, error};
 use ticket_client::TickerClient;
@@ -23,35 +23,26 @@ fn main() {
     .init();
 
     info!("Starting the ticket server...");
-    let ticket_server = Arc::new(Mutex::new(TicketServer::new("The Matrix", 12)));
+    let ticket_server = Arc::new(Mutex::new(TicketServer::new("The Matrix", 15)));
     let mut threads = vec![];
 
-    let client1 = TickerClient::new("Bob", 5, Arc::clone(&ticket_server));
-    let t1 = std::thread::Builder::new().name("T1".to_string()).spawn(move || {
+    let clients = vec![
+        TickerClient::new("Bob", 5, Arc::clone(&ticket_server)),
+        TickerClient::new("Alice", 3, Arc::clone(&ticket_server)),
+        TickerClient::new("Jake", 1, Arc::clone(&ticket_server)),
+        TickerClient::new("Thomas", 5, Arc::clone(&ticket_server)),
+        TickerClient::new("John", 2, Arc::clone(&ticket_server)),
+        TickerClient::new("Jane", 3, Arc::clone(&ticket_server)),
+    ];
 
-        client1.book_tickets();
-    });
-    threads.push(t1);
-
-    let client2 = TickerClient::new("Alice", 5, Arc::clone(&ticket_server));
-    let t2 = std::thread::Builder::new().name("T2".to_string()).spawn(move || {
-        client2.book_tickets();
-    });
-    threads.push(t2);
-
-    let client3 = TickerClient::new("Jake", 1, Arc::clone(&ticket_server));
-    let t3 = std::thread::Builder::new().name("T3".to_string()).spawn(move || {
-        client3.book_tickets();
-    });
-    threads.push(t3);
-
-    let client4 = TickerClient::new("Thomas", 5, Arc::clone(&ticket_server));
-    let t4 = std::thread::Builder::new().name("T4".to_string()).spawn(move || {
-        client4.book_tickets();
-    });
-    threads.push(t4);
-
-
+    let mut i = 1;
+    for client in clients {
+        let t = std::thread::Builder::new().name(format!("T{}",i)).spawn(move || {
+            client.book_tickets();
+        });
+        threads.push(t);
+        i += 1;
+    }
 
     for t in threads {
         if let Ok(t) = t {
