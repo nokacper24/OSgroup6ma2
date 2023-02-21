@@ -7,7 +7,7 @@ fn main() {
     let ticket_server = Arc::new(Mutex::new(TicketServer::new("The Matrix", 20)));
     
     let ticket_server1 = Arc::clone(&ticket_server);
-        std::thread::spawn(move || {
+        let t1 = std::thread::spawn(move || {
             match ticket_server1.lock(){
                 Ok(mut ticket_server) => {
                     if let Err(e) = ticket_server.book_tickets("Alice", 5) {
@@ -20,10 +20,10 @@ fn main() {
         }});
 
         let ticket_server2 = Arc::clone(&ticket_server);
-        std::thread::spawn(move || {
+        let t2 = std::thread::spawn(move || {
             match ticket_server2.lock(){
                 Ok(mut ticket_server) => {
-                    if let Err(e) = ticket_server.book_tickets("Alice", 5) {
+                    if let Err(e) = ticket_server.book_tickets("Bob", 10) {
                         println!("Error: {}", e);
                     }
                 }
@@ -33,7 +33,9 @@ fn main() {
         }});
 
 
-
+        t1.join().unwrap();
+        t2.join().unwrap();
+    
 
 
 }
