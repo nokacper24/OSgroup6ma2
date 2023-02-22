@@ -36,15 +36,13 @@ fn main() {
         TickerClient::new("Jane", 3, Arc::clone(&ticket_server)),
     ];
 
-    let mut i = 1;
-    for client in clients {
+    for (i, client) in clients.into_iter().enumerate() {
         let t = std::thread::Builder::new()
-            .name(format!("T{}", i))
+            .name(format!("T{}", i + 1))
             .spawn(move || {
                 client.book_tickets();
             });
         threads.push(t);
-        i += 1;
     }
 
     for t in threads.into_iter().flatten() {
