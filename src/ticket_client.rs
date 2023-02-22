@@ -23,9 +23,12 @@ impl TickerClient {
     }
     pub fn book_tickets(&self) {
         match self.server.lock() {
-            Ok(mut server) => {
-                _ = server.book_tickets(&self.name, self.amount);
-            }
+            Ok(mut server) => match server.book_tickets(&self.name, self.amount) {
+                Ok(()) => {}
+                Err(e) => {
+                    error!("Error booking tickets: {}", e);
+                }
+            },
             Err(e) => {
                 error!("Error locking server: {}", e)
             }
