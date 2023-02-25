@@ -1,7 +1,3 @@
-use std::sync::{Arc, Mutex};
-
-use log::error;
-
 use crate::ticket_server::TicketServer;
 
 pub struct TickerClient<'a> {
@@ -22,6 +18,6 @@ impl TickerClient<'_> {
         }
     }
     pub fn book_tickets(&mut self) {
-        self.server.book_tickets(&self.name, self.amount);
+        _ = self.server.book_tickets(&self.name, self.amount);
     }
 }
