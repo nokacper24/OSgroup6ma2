@@ -1,5 +1,3 @@
-use std::sync::{Arc, Mutex};
-
 use log::{error, info};
 use ticket_client::TickerClient;
 use ticket_server::TicketServer;
@@ -27,12 +25,12 @@ fn main() {
     let mut ticket_server = TicketServer::new("The Matrix", 15);
     let mut threads = vec![];
 
-    let server1: &'static mut TicketServer;
-    let server2: &'static mut TicketServer;
-    let server3: &'static mut TicketServer;
-    let server4: &'static mut TicketServer;
-    let server5: &'static mut TicketServer;
-    let server6: &'static mut TicketServer;
+    let server1: &mut TicketServer;
+    let server2: &mut TicketServer;
+    let server3: &mut TicketServer;
+    let server4: &mut TicketServer;
+    let server5: &mut TicketServer;
+    let server6: &mut TicketServer;
     unsafe {
         server1 = &mut *(&mut ticket_server as *mut TicketServer);
         server2 = &mut *(&mut ticket_server as *mut TicketServer);
@@ -41,7 +39,7 @@ fn main() {
         server5 = &mut *(&mut ticket_server as *mut TicketServer);
         server6 = &mut *(&mut ticket_server as *mut TicketServer);
     }
- 
+
     let clients = vec![
         TickerClient::new("Bob", 5, server1),
         TickerClient::new("Alice", 3, server2),
