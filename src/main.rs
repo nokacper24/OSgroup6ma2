@@ -23,30 +23,24 @@ fn main() {
 
     info!("Starting the ticket server...");
     let mut ticket_server = TicketServer::new("The Matrix", 15);
+
     let mut threads = vec![];
 
-    let server1: &mut TicketServer;
-    let server2: &mut TicketServer;
-    let server3: &mut TicketServer;
-    let server4: &mut TicketServer;
-    let server5: &mut TicketServer;
-    let server6: &mut TicketServer;
+    let mut server_refs: Vec<&mut TicketServer> = vec![];
     unsafe {
-        server1 = &mut *(&mut ticket_server as *mut TicketServer);
-        server2 = &mut *(&mut ticket_server as *mut TicketServer);
-        server3 = &mut *(&mut ticket_server as *mut TicketServer);
-        server4 = &mut *(&mut ticket_server as *mut TicketServer);
-        server5 = &mut *(&mut ticket_server as *mut TicketServer);
-        server6 = &mut *(&mut ticket_server as *mut TicketServer);
+        for _i in 0..6 {
+            let a = &mut *(&mut ticket_server as *mut TicketServer);
+            server_refs.push(a);
+        }
     }
-
+    // using unwrap since I know there is 6 items and we're already breaking the rules by using unsafe...
     let clients = vec![
-        TickerClient::new("Bob", 5, server1),
-        TickerClient::new("Alice", 3, server2),
-        TickerClient::new("Jake", 1, server3),
-        TickerClient::new("Thomas", 5, server4),
-        TickerClient::new("John", 2, server5),
-        TickerClient::new("Jane", 3, server6),
+        TickerClient::new("Bob", 5, server_refs.pop().unwrap()),
+        TickerClient::new("Alice", 3, server_refs.pop().unwrap()),
+        TickerClient::new("Jake", 1, server_refs.pop().unwrap()),
+        TickerClient::new("Thomas", 5, server_refs.pop().unwrap()),
+        TickerClient::new("John", 2, server_refs.pop().unwrap()),
+        TickerClient::new("Jane", 3, server_refs.pop().unwrap()),
     ];
 
     for (i, mut client) in clients.into_iter().enumerate() {
