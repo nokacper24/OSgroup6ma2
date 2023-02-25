@@ -24,19 +24,34 @@ fn main() {
         .init();
 
     info!("Starting the ticket server...");
-    let ticket_server = Arc::new(Mutex::new(TicketServer::new("The Matrix", 15)));
+    let mut ticket_server = TicketServer::new("The Matrix", 15);
     let mut threads = vec![];
 
+    let server1: &'static mut TicketServer;
+    let server2: &'static mut TicketServer;
+    let server3: &'static mut TicketServer;
+    let server4: &'static mut TicketServer;
+    let server5: &'static mut TicketServer;
+    let server6: &'static mut TicketServer;
+    unsafe {
+        server1 = &mut *(&mut ticket_server as *mut TicketServer);
+        server2 = &mut *(&mut ticket_server as *mut TicketServer);
+        server3 = &mut *(&mut ticket_server as *mut TicketServer);
+        server4 = &mut *(&mut ticket_server as *mut TicketServer);
+        server5 = &mut *(&mut ticket_server as *mut TicketServer);
+        server6 = &mut *(&mut ticket_server as *mut TicketServer);
+    }
+ 
     let clients = vec![
-        TickerClient::new("Bob", 5, Arc::clone(&ticket_server)),
-        TickerClient::new("Alice", 3, Arc::clone(&ticket_server)),
-        TickerClient::new("Jake", 1, Arc::clone(&ticket_server)),
-        TickerClient::new("Thomas", 5, Arc::clone(&ticket_server)),
-        TickerClient::new("John", 2, Arc::clone(&ticket_server)),
-        TickerClient::new("Jane", 3, Arc::clone(&ticket_server)),
+        TickerClient::new("Bob", 5, server1),
+        TickerClient::new("Alice", 3, server2),
+        TickerClient::new("Jake", 1, server3),
+        TickerClient::new("Thomas", 5, server4),
+        TickerClient::new("John", 2, server5),
+        TickerClient::new("Jane", 3, server6),
     ];
 
-    for (i, client) in clients.into_iter().enumerate() {
+    for (i, mut client) in clients.into_iter().enumerate() {
         let t = std::thread::Builder::new()
             .name(format!("T{}", i + 1))
             .spawn(move || {
