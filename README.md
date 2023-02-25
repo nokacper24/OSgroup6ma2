@@ -33,7 +33,7 @@ Thread: T5 [ERROR] - Sorry John, we have 1 seats left.
 We can see that the `TicketServer` is accessed by multiple clients at the same time, the number of seats remains correct during the whole process.
 
 ### The anomaly
-It seems that the intention of the assignment was to observe the "anomaly" that occurs when the `TicketServer` is accessed by multiple clients simultaneously. I've decided to experiment with `unsafe` code to see if I can reproduce the anomaly in Rust. The code is on the `broken` branch.  
+It seems that the intention of the assignment was to observe the "anomaly" that occurs when the `TicketServer` is accessed by multiple clients simultaneously. I've decided to experiment with `unsafe` code to see if I can reproduce the anomaly in Rust. The code is on the [`broken`](https://github.com/nokacper24/OSgroup6ma2/tree/broken) branch.  
 Here's the output from the **unsafe** program:
 ```
 Thread: main [INFO] - Starting the ticket server...
