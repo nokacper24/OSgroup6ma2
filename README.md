@@ -31,3 +31,24 @@ Thread: T5 [ERROR] - Sorry John, we have 1 seats left.
 ```
 
 We can see that the `TicketServer` is accessed by multiple clients at the same time, the number of seats remains correct during the whole process.
+
+### The anomaly
+It seems that the intention of the assignment was to observe the "anomaly" that occurs when the `TicketServer` is accessed by multiple clients simultaneously. I've decided to experiment with `unsafe` code to see if I can reproduce the anomaly in Rust. The code is on the `broken` branch.  
+Here's the output from the **unsafe** program:
+```
+Thread: main [INFO] - Starting the ticket server...
+Thread: T1 [INFO] - Hi, Bob! There are 15 seats available for The Matrix and you'd like to buy 5.
+Thread: T2 [INFO] - Hi, Alice! There are 15 seats available for The Matrix and you'd like to buy 3.
+Thread: T2 [INFO] - Enjoy the movie, Alice! Remaining seats: 7
+Thread: T1 [INFO] - Enjoy the movie, Bob! Remaining seats: 10
+Thread: T4 [INFO] - Hi, Thomas! There are 10 seats available for The Matrix and you'd like to buy 5.
+Thread: T5 [INFO] - Hi, John! There are 10 seats available for The Matrix and you'd like to buy 2.
+Thread: T5 [INFO] - Enjoy the movie, John! Remaining seats: 0
+Thread: T6 [INFO] - Hi, Jane! There are 7 seats available for The Matrix and you'd like to buy 3.
+Thread: T4 [INFO] - Enjoy the movie, Thomas! Remaining seats: 2
+Thread: T3 [INFO] - Hi, Jake! There are 15 seats available for The Matrix and you'd like to buy 1.
+Thread: T6 [ERROR] - Sorry Jane, we have 0 seats left.
+Thread: T3 [ERROR] - Sorry Jake, we have 0 seats left.
+```
+We can see that the `TicketServer` is accessed by multiple threads (clients) at the same time, the number of seats reported by the server is incorrect. For example, when Alice on T2 wants to book 3 tickets. Server first reports that there are 15 searts available, then server processes Alice's request and reports that there are 7 seats left. $15 - 3 \neq 7$  
+This example demonstrates that accessing shared mutable data without proper synchronization mechanisms can lead to unexpected results.
