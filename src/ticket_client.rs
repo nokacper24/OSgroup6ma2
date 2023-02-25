@@ -23,11 +23,9 @@ impl TickerClient {
     }
     pub fn book_tickets(&self) {
         match self.server.lock() {
-            Ok(mut server) => match server.book_tickets(&self.name, self.amount) {
-                Ok(()) => {}
-                Err(e) => {
-                    error!("Error booking tickets: {}", e);
-                }
+            Ok(mut server) => {
+                // ignoring the result of the booking becase the server already logs the result
+                _ = server.book_tickets(&self.name, self.amount);
             },
             Err(e) => {
                 error!("Error locking server: {}", e)
